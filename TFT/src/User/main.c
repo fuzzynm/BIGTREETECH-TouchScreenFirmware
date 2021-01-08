@@ -53,6 +53,10 @@ void Hardware_GenericInit(void)
     knob_LED_Init();
   #endif
 
+  #ifdef BUZZER_PIN
+    Buzzer_Config();
+  #endif
+
   #if !defined(MKS_32_V1_4) && !defined (MKS_28_V1_0)
     //causes hang if we deinit spi1
     SD_DeInit();
@@ -90,9 +94,7 @@ void Hardware_GenericInit(void)
   #ifdef LCD_LED_PWM_CHANNEL
     Set_LCD_Brightness(LCD_BRIGHTNESS[infoSettings.lcd_brightness]);
   #endif
-  GUI_RestoreColorDefault();
-  infoMenuSelect();
-  fanControlInit();
+  switchMode();
 }
 
 int main(void)

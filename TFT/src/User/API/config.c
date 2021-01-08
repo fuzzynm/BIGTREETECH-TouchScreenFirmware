@@ -525,15 +525,16 @@ void showError(CONFIG_STATS stat)
 // parse the keyword values in the buffer
 void parseConfigKey(u16 index)
 {
-  //----------------------------general settings
   switch (index)
   {
-    case C_INDEX_UNIFIEDMENU:
+    //----------------------------general settings
+
+    case C_INDEX_STATUS_SCREEN:
       infoSettings.status_screen = getOnOff();
       break;
 
     case C_INDEX_UART_BAUDRATE:
-      SET_VALID_INT_VALUE(infoSettings.baudrate, 0, ITEM_BAUDRATE_NUM - 1);
+      SET_VALID_INT_VALUE(infoSettings.baudrate, 0, BAUDRATE_COUNT - 1);
       break;
 
     case C_INDEX_LANGUAGE:
@@ -619,7 +620,7 @@ void parseConfigKey(u16 index)
         break;
 
       case C_INDEX_SERIAL_ON:
-          infoSettings.serial_alwaysOn = getOnOff();
+        infoSettings.serial_alwaysOn = getOnOff();
         break;
 
       case C_INDEX_MARLIN_BG_COLOR:
@@ -631,11 +632,11 @@ void parseConfigKey(u16 index)
         break;
 
       case C_INDEX_MARLIN_SHOW_TITLE:
-          infoSettings.marlin_mode_showtitle = getOnOff();
+        infoSettings.marlin_mode_showtitle = getOnOff();
         break;
 
       case C_INDEX_MARLIN_FULLSCREEN:
-          infoSettings.marlin_mode_fullscreen = getOnOff();
+        infoSettings.marlin_mode_fullscreen = getOnOff();
         break;
 
       case C_INDEX_MARLIN_TYPE:
@@ -770,10 +771,9 @@ void parseConfigKey(u16 index)
       break;
 
     case C_INDEX_PAUSE_FEEDRATE:
-      if (key_seen("X")) SET_VALID_INT_VALUE(infoSettings.pause_feedrate[0], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
-      if (key_seen("Y")) SET_VALID_INT_VALUE(infoSettings.pause_feedrate[1], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
-      if (key_seen("Z")) SET_VALID_INT_VALUE(infoSettings.pause_feedrate[2], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
-      if (key_seen("E")) SET_VALID_INT_VALUE(infoSettings.pause_feedrate[3], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
+      if (key_seen("XY")) SET_VALID_INT_VALUE(infoSettings.pause_feedrate[FEEDRATE_XY], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
+      if (key_seen("Z")) SET_VALID_INT_VALUE(infoSettings.pause_feedrate[FEEDRATE_Z], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
+      if (key_seen("E")) SET_VALID_INT_VALUE(infoSettings.pause_feedrate[FEEDRATE_E], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
       break;
 
     case C_INDEX_LEVEL_EDGE:
@@ -789,9 +789,12 @@ void parseConfigKey(u16 index)
       break;
 
     case C_INDEX_LEVEL_FEEDRATE:
-      if (key_seen("X")) SET_VALID_INT_VALUE(infoSettings.level_feedrate[0], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
-      if (key_seen("Y")) SET_VALID_INT_VALUE(infoSettings.level_feedrate[1], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
-      if (key_seen("Z")) SET_VALID_INT_VALUE(infoSettings.level_feedrate[2], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
+      if (key_seen("XY")) SET_VALID_INT_VALUE(infoSettings.level_feedrate[FEEDRATE_XY], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
+      if (key_seen("Z")) SET_VALID_INT_VALUE(infoSettings.level_feedrate[FEEDRATE_Z], MIN_SPEED_LIMIT, MAX_SPEED_LIMIT);
+      break;
+
+    case C_INDEX_XY_OFFSET_PROBING:
+      infoSettings.xy_offset_probing = getOnOff();
       break;
 
     case C_INDEX_PREHEAT_NAME_1:
@@ -823,7 +826,7 @@ void parseConfigKey(u16 index)
       break;
     }
 
-      //----------------------------Power Supply Settings (if connected to TFT Controller):
+    //----------------------------Power Supply Settings (if connected to TFT Controller):
 
     #ifdef PS_ON_PIN
       case C_INDEX_PS_ON:
@@ -831,7 +834,7 @@ void parseConfigKey(u16 index)
         break;
 
       case C_INDEX_PS_LOGIC:
-          infoSettings.powerloss_invert = getOnOff();
+        infoSettings.powerloss_invert = getOnOff();
         break;
 
       case C_INDEX_SHUTDOWN_TEMP:
@@ -843,11 +846,11 @@ void parseConfigKey(u16 index)
 
     #ifdef BTT_MINI_UPS
       case C_INDEX_POWERLOSS_EN:
-          infoSettings.powerloss_en = getOnOff();
+        infoSettings.powerloss_en = getOnOff();
         break;
 
       case C_INDEX_POWERLOSS_HOME:
-          infoSettings.powerloss_home = getOnOff();
+        infoSettings.powerloss_home = getOnOff();
         break;
 
       case C_INDEX_POWERLOSS_ZRAISE:
@@ -855,7 +858,7 @@ void parseConfigKey(u16 index)
         break;
 
       case C_INDEX_BTT_MINIUPS:
-          infoSettings.btt_ups = getOnOff();
+        infoSettings.btt_ups = getOnOff();
         break;
     #endif
 
@@ -868,7 +871,7 @@ void parseConfigKey(u16 index)
         break;
 
       case C_INDEX_RUNOUT_LOGIC:
-          infoSettings.runout_invert = getOnOff();
+        infoSettings.runout_invert = getOnOff();
         break;
 
       case C_INDEX_RUNOUT_NOISE:
@@ -883,15 +886,15 @@ void parseConfigKey(u16 index)
     //----------------------------other device specific settings
     #ifdef BUZZER_PIN
       case C_INDEX_TOUCH_SOUND:
-            infoSettings.touchSound = getOnOff();
+        infoSettings.touchSound = getOnOff();
         break;
 
       case C_INDEX_TOAST_SOUND:
-            infoSettings.toastSound = getOnOff();
+        infoSettings.toastSound = getOnOff();
         break;
 
       case C_INDEX_ALERT_SOUND:
-            infoSettings.alertSound = getOnOff();
+        infoSettings.alertSound = getOnOff();
         break;
     #endif
 
@@ -924,6 +927,7 @@ void parseConfigKey(u16 index)
     #endif
 
     //----------------------------CustomG-Code Commands upto 15 custom G-code
+
     case C_INDEX_CUSTOM_LABEL_1:
     case C_INDEX_CUSTOM_LABEL_2:
     case C_INDEX_CUSTOM_LABEL_3:
@@ -982,7 +986,9 @@ void parseConfigKey(u16 index)
           customcode_index--;
       break;
     }
+
     //----------------------------Start, End & Cancel G-codes
+
     case C_INDEX_START_GCODE_ON:
       infoSettings.send_start_gcode = getOnOff();
       break;
